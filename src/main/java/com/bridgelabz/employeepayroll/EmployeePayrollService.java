@@ -1,8 +1,9 @@
 package com.bridgelabz.employeepayroll;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Map;
 
 public class EmployeePayrollService {
 
@@ -34,6 +35,31 @@ public class EmployeePayrollService {
 			this.addEmployeeToPayroll(employeePayrollData.id, employeePayrollData.name, employeePayrollData.gender,
 					employeePayrollData.salary, employeePayrollData.startDate);
 		});
+	}
+
+	public void addEmployeeToPayrollWithThreads(List<EmployeePayrollData> employeePayrollList) {
+		Map<Integer, Boolean> employeeAdditionStatus = new HashMap<>();
+		employeePayrollList.forEach(employeePayrollData -> {
+			Runnable task = () -> {
+				employeeAdditionStatus.put(employeePayrollData.hashCode(), false);
+				try {
+					this.addEmployeeToPayroll(employeePayrollData.id, employeePayrollData.name,
+							employeePayrollData.gender, employeePayrollData.salary, employeePayrollData.startDate);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				employeeAdditionStatus.put(employeePayrollData.hashCode(), true);
+			};
+			Thread thread = new Thread(task, employeePayrollData.name);
+			thread.start();
+		});
+		while (employeeAdditionStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void addEmployeeToPayroll(int id, String name, String gender, double salary, LocalDate startDate) {
