@@ -42,13 +42,12 @@ public class EmployeePayrollService {
 		employeePayrollList.forEach(employeePayrollData -> {
 			Runnable task = () -> {
 				employeeAdditionStatus.put(employeePayrollData.hashCode(), false);
-				try {
-					this.addEmployeeToPayroll(employeePayrollData.id, employeePayrollData.name,
-							employeePayrollData.gender, employeePayrollData.salary, employeePayrollData.startDate);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				System.out.println("employee being added"+Thread.currentThread().getName());
+				this.addEmployeeToPayroll(employeePayrollData.id, employeePayrollData.name, employeePayrollData.gender,
+						employeePayrollData.salary, employeePayrollData.startDate);
+
 				employeeAdditionStatus.put(employeePayrollData.hashCode(), true);
+				System.out.println("employee added"+Thread.currentThread().getName());
 			};
 			Thread thread = new Thread(task, employeePayrollData.name);
 			thread.start();

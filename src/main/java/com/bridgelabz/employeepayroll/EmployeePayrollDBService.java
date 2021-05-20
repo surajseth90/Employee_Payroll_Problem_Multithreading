@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeePayrollDBService {
+	private PreparedStatement preparedStatement;
+	private static int connectionCounter =0;
 	private static EmployeePayrollDBService employeePayrollDBService;
 
 	public static EmployeePayrollDBService getInstance() {
@@ -21,7 +23,8 @@ public class EmployeePayrollDBService {
 		return employeePayrollDBService;
 	}
 
-	public static Connection getConnection() throws SQLException {
+	public static synchronized Connection getConnection() throws SQLException {
+		connectionCounter++;
 		String jdbcURL = "jdbc:mysql://localhost:3306/employee_payroll_service";
 		String userName = "root";
 		String password = "Surajmysql@90";
@@ -60,7 +63,7 @@ public class EmployeePayrollDBService {
 				"INSERT INTO employee_payroll (name,Gender,salary,start) VALUES ('%s','%s','%s','%s')", name, gender,
 				salary, Date.valueOf(startDate));
 		try (Connection connection = this.getConnection();) {
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			preparedStatement = connection.prepareStatement(sql);
 			int rowAffected = preparedStatement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 			if (rowAffected == 1) {
 				ResultSet resultSet = preparedStatement.getGeneratedKeys();
