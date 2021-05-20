@@ -65,9 +65,63 @@ public class EmployeePayrollService {
 		employeePayrollList.add(employeePayrollDBService.addEmployee(id, name, gender, salary, startDate));
 	}
 
+	private void addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate) throws EmployeePayrollServiceException {
+		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name, gender, salary, startDate));
+	}
+	
 	public long countEntries(IOService ioService) {
 		if (ioService.equals(IOService.DB_IO))
 			return employeePayrollList.size();
 		return 0;
+	}
+
+	public void updateSalaryOfMultipleEmployees(Map<String, Double> employeeSalaryMap) {
+		Map<Integer, Boolean> salaryUpdateStatus = new HashMap<>();
+		employeeSalaryMap.forEach((employee, salary) -> {
+			Runnable salaryUpdate = () -> {
+				salaryUpdateStatus.put(employee.hashCode(), false);
+				
+				this.updateEmployeeSalary(employee, salary);
+				salaryUpdateStatus.put(employee.hashCode(), true);
+				
+			};
+			Thread thread = new Thread(salaryUpdate, employee);
+			thread.start();
+		});
+		while (salaryUpdateStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		
+	}
+		
+	}
+	public void updateEmployeeSalary(String name, double salary) {
+		int result = employeePayrollDBService.updateEmployeeData(name, salary);
+		if (result == 0)
+			return;
+		EmployeePayrollData employeePayrollData = this.getEmployeeData(name);
+		if (employeePayrollData != null)
+			employeePayrollData.salary = salary;
+	}
+
+	
+	private EmployeePayrollData getEmployeeData(String name) {
+		return this.employeePayrollList.stream()
+				.filter(employeePayrollData -> employeePayrollData.name.equalsIgnoreCase(name)).findFirst()
+				.orElse(null);
+	}
+
+	public static void main(String[] args) throws EmployeePayrollServiceException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.addEmployeeToPayroll("s", "m", 30000, LocalDate.now());
+		
+	}
+
+	public boolean checkEmployeePayrollInSyncWithDB(String name) {
+		List<EmployeePayrollData> employeeDataList = employeePayrollDBService.getEmployeeData(name);
+		return employeeDataList.get(0).equals(this.getEmployeeData(name));
 	}
 }
