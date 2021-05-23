@@ -31,7 +31,7 @@ public class JSONServerTest {
 				EmployeePayrollData[].class);
 		return arrayOfEmployeePayroll;
 	}
-	
+
 	private Response addContactToJsonServer(EmployeePayrollData employeePayroll) {
 		String addressBookJson = new Gson().toJson(employeePayroll);
 		RequestSpecification request = RestAssured.given();
@@ -39,7 +39,6 @@ public class JSONServerTest {
 		request.body(addressBookJson);
 		return request.post("/EmployeePayroll");
 	}
-
 
 	@Test
 	public void givenAddressBookJSONServer_WhenRetrieved_ShouldReturnCount() {
@@ -63,5 +62,24 @@ public class JSONServerTest {
 		employeePayrollService.addContactToEmployeePayroll(arrayOfPersonPayroll, IOService.REST_IO);
 		long entries = employeePayrollService.countEntries(IOService.REST_IO);
 		Assert.assertEquals(2, entries);
+	}
+
+	@Test
+	public void givenMultipleContact_WhenAdded_ShouldMatch201ResponseAndCount() {
+		EmployeePayrollData[] arrayOfEmployeePayroll = getEmployeePayroll();
+		EmployeePayrollService employeePayrollService;
+		employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayOfEmployeePayroll));
+		EmployeePayrollData[] arrayOfPersonPayroll = { new EmployeePayrollData(0, "Purvi", "F", 0.0, LocalDate.now()),
+				new EmployeePayrollData(0, "Rahul", "M", 0.0, LocalDate.now()) };
+		for (EmployeePayrollData employeePayrollData : arrayOfEmployeePayroll) {
+			Response response = addContactToJsonServer(employeePayrollData);
+			int statusCode = response.getStatusCode();
+			Assert.assertEquals(201, statusCode);
+			employeePayrollData = new Gson().fromJson(response.asString(), EmployeePayrollData.class);
+			employeePayrollService.addContactToEmployeePayroll(employeePayrollData, IOService.REST_IO);
+		}
+
+		long entries = employeePayrollService.countEntries(IOService.REST_IO);
+		Assert.assertEquals(3, entries);
 	}
 }
