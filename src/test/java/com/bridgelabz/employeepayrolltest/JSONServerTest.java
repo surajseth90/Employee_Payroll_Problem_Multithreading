@@ -51,7 +51,7 @@ public class JSONServerTest {
 	}
 
 	@Test
-	public void givenMultipleContact_WhenAdded_ShouldMatch201ResponseAndCount() {
+	public void givenContact_WhenAdded_ShouldMatch201ResponseAndCount() {
 		EmployeePayrollData[] arrayOfEmployeePayroll = getEmployeePayroll();
 		EmployeePayrollService employeePayrollService;
 		employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayOfEmployeePayroll));
