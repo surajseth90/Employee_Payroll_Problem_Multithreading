@@ -42,12 +42,12 @@ public class EmployeePayrollService {
 		employeePayrollList.forEach(employeePayrollData -> {
 			Runnable task = () -> {
 				employeeAdditionStatus.put(employeePayrollData.hashCode(), false);
-				System.out.println("employee being added"+Thread.currentThread().getName());
+				System.out.println("employee being added" + Thread.currentThread().getName());
 				this.addEmployeeToPayroll(employeePayrollData.id, employeePayrollData.name, employeePayrollData.gender,
 						employeePayrollData.salary, employeePayrollData.startDate);
 
 				employeeAdditionStatus.put(employeePayrollData.hashCode(), true);
-				System.out.println("employee added"+Thread.currentThread().getName());
+				System.out.println("employee added" + Thread.currentThread().getName());
 			};
 			Thread thread = new Thread(task, employeePayrollData.name);
 			thread.start();
@@ -65,14 +65,10 @@ public class EmployeePayrollService {
 		employeePayrollList.add(employeePayrollDBService.addEmployee(id, name, gender, salary, startDate));
 	}
 
-	private void addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate) throws EmployeePayrollServiceException {
-		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name, gender, salary, startDate));
-	}
-	
 	public long countEntries(IOService ioService) {
 		if (ioService.equals(IOService.DB_IO))
 			return employeePayrollList.size();
-		return 0;
+		return employeePayrollList.size();
 	}
 
 	public void updateSalaryOfMultipleEmployees(Map<String, Double> employeeSalaryMap) {
@@ -80,10 +76,10 @@ public class EmployeePayrollService {
 		employeeSalaryMap.forEach((employee, salary) -> {
 			Runnable salaryUpdate = () -> {
 				salaryUpdateStatus.put(employee.hashCode(), false);
-				
+
 				this.updateEmployeeSalary(employee, salary);
 				salaryUpdateStatus.put(employee.hashCode(), true);
-				
+
 			};
 			Thread thread = new Thread(salaryUpdate, employee);
 			thread.start();
@@ -94,10 +90,11 @@ public class EmployeePayrollService {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		
+
+		}
+
 	}
-		
-	}
+
 	public void updateEmployeeSalary(String name, double salary) {
 		int result = employeePayrollDBService.updateEmployeeData(name, salary);
 		if (result == 0)
@@ -107,17 +104,10 @@ public class EmployeePayrollService {
 			employeePayrollData.salary = salary;
 	}
 
-	
 	private EmployeePayrollData getEmployeeData(String name) {
 		return this.employeePayrollList.stream()
 				.filter(employeePayrollData -> employeePayrollData.name.equalsIgnoreCase(name)).findFirst()
 				.orElse(null);
-	}
-
-	public static void main(String[] args) throws EmployeePayrollServiceException {
-		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-		employeePayrollService.addEmployeeToPayroll("s", "m", 30000, LocalDate.now());
-		
 	}
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) {
