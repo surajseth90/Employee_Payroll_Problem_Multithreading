@@ -82,4 +82,21 @@ public class JSONServerTest {
 		long entries = employeePayrollService.countEntries(IOService.REST_IO);
 		Assert.assertEquals(3, entries);
 	}
+	
+	@Test
+	public void givenSalary_WhenUpdated_ShouldMatch200response() {
+		EmployeePayrollData[] employeePayroll = getEmployeePayroll();
+		EmployeePayrollService employeePayrollService;
+		employeePayrollService = new EmployeePayrollService(Arrays.asList(employeePayroll));
+		employeePayrollService.updateSalary("Suraj", 600000.0, IOService.REST_IO);
+		EmployeePayrollData employeePayrollData = employeePayrollService.getEmployeePayrollData("Suraj");
+
+		String addJson = new Gson().toJson(employeePayrollData);
+		RequestSpecification request = RestAssured.given();
+		request.header("Content-Type", "application/json");
+		request.body(addJson);
+		Response response = request.put("/EmployeePayroll/" + employeePayrollData.id);
+		int statusCode = response.getStatusCode();
+		Assert.assertEquals(200, statusCode);
+	}
 }

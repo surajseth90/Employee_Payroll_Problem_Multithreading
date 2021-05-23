@@ -6,7 +6,6 @@ import java.util.Objects;
 
 public class EmployeePayrollData {
 	public int id;
-	public Integer empId;
 	public String name;
 	public String gender;
 	public double salary;
@@ -21,14 +20,6 @@ public class EmployeePayrollData {
 		this.gender = gender;
 		this.salary = salary;
 		this.startDate = startDate;
-	}
-	
-	public EmployeePayrollData(Integer empId,String name, String gender, double salary, String date) {
-		this.empId =empId;
-		this.name = name;
-		this.gender = gender;
-		this.salary = salary;
-		this.date = date;
 	}
 
 	@Override

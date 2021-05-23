@@ -115,6 +115,19 @@ public class EmployeePayrollService {
 		return employeeDataList.get(0).equals(this.getEmployeeData(name));
 	}
 
+	public EmployeePayrollData getEmployeePayrollData(String name) {
+		EmployeePayrollData employeePayrollData;
+		employeePayrollData = this.employeePayrollList.stream().filter(dataItem -> dataItem.name.equals(name))
+				.findFirst().orElse(null);
+		return employeePayrollData;
+	}
+
+	public void updateSalary(String name, double salary, IOService restIo) {
+		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+		if (employeePayrollData != null)
+			employeePayrollData.salary =salary;
+	}
+	
 	public void addContactToEmployeePayroll(EmployeePayrollData arrayOfPersonPayroll, IOService restIo) {
 		employeePayrollList.add(arrayOfPersonPayroll);
 	}
