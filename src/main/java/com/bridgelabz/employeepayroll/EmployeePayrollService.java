@@ -114,4 +114,8 @@ public class EmployeePayrollService {
 		List<EmployeePayrollData> employeeDataList = employeePayrollDBService.getEmployeeData(name);
 		return employeeDataList.get(0).equals(this.getEmployeeData(name));
 	}
+
+	public void addContactToEmployeePayroll(EmployeePayrollData arrayOfPersonPayroll, IOService restIo) {
+		employeePayrollList.add(arrayOfPersonPayroll);
+	}
 }
