@@ -99,4 +99,21 @@ public class JSONServerTest {
 		int statusCode = response.getStatusCode();
 		Assert.assertEquals(200, statusCode);
 	}
+	
+	@Test
+	public void givenEmployeePayroll_WhenDeleted_ShouldMatch200ResponseAndCount() {
+		EmployeePayrollData[] arrayOfAddressBook = getEmployeePayroll();
+		EmployeePayrollService employeePayrollService;
+		employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayOfAddressBook));
+		EmployeePayrollData employeePayrollData = employeePayrollService.getEmployeePayrollData("Purvi");
+		RequestSpecification request = RestAssured.given();
+		request.header("Content-Type", "application/json");
+		Response response = request.delete("/addressbook/" + employeePayrollData.id);
+		int statusCode = response.getStatusCode();
+		Assert.assertEquals(200, statusCode);
+
+		employeePayrollService.deleteContactPayroll(employeePayrollData.name, IOService.REST_IO);
+		long entries = employeePayrollService.countEntries(IOService.REST_IO);
+		Assert.assertEquals(2, entries);
+	}
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class EmployeePayrollService {
 
 	public enum IOService {
@@ -130,5 +131,10 @@ public class EmployeePayrollService {
 	
 	public void addContactToEmployeePayroll(EmployeePayrollData arrayOfPersonPayroll, IOService restIo) {
 		employeePayrollList.add(arrayOfPersonPayroll);
+	}
+
+	public void deleteContactPayroll(String name, IOService restIo) {
+		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+		employeePayrollList.remove(employeePayrollData);
 	}
 }
